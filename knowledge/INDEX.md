@@ -39,6 +39,7 @@
 | [30-05](30_ГРАБЛИ/30-05_verificator_код_возврата.md) | Код Verificator об успехе не говорит | код 0 и «didn't complete with success»; код 1 без причины | П |
 | [30-06](30_ГРАБЛИ/30-06_control_center_перевод_строки_и_диалоги.md) | Control Center молчит без `\r\n` и на неизвестное событие; Validator без `IncludeExcluded` в .vws открывает окно | нет ответа; «No project loaded»; окно «Include excluded items» | П |
 | [30-07](30_ГРАБЛИ/30-07_validator_и_designer_только_окна.md) | Validator и Designer — только окна; `Validator.exe --help` висит | процесс не завершается | П |
+| [30-09](30_ГРАБЛИ/30-09_функция_в_guard_выбора_даёт_конфликт_verificator.md) | Вызов функции в guard ветки choice — ошибка «Conflict» у Verificator; присвоить результат переменной до выбора | «Conflict(s) for the trigger VS_TRIGGERLESS_TRIGGER» | П |
 | [30-08](30_ГРАБЛИ/30-08_порядок_элементов_по_схеме.md) | Порядок элементов .vsr задан схемой: internalTransitions между entry и exit | «is not allowed for content model» | П |
 
 ## 40_СРЕДА — где что стоит
@@ -64,6 +65,7 @@
 | `No initial reaction or state specified for state` | [30-05](30_ГРАБЛИ/30-05_verificator_код_возврата.md), [20-02](20_ПРИЁМЫ/20-02_автомат_текстом_на_python.md) |
 | Control Center не отвечает | [30-06](30_ГРАБЛИ/30-06_control_center_перевод_строки_и_диалоги.md) |
 | `deductEvent` вернул `"No project loaded"` | [30-06](30_ГРАБЛИ/30-06_control_center_перевод_строки_и_диалоги.md) |
+| `Conflict(s) for the trigger VS_TRIGGERLESS_TRIGGER` | [30-09](30_ГРАБЛИ/30-09_функция_в_guard_выбора_даёт_конфликт_verificator.md) |
 | Окно «Include excluded items» / «Unable to create workspace» | [30-06](30_ГРАБЛИ/30-06_control_center_перевод_строки_и_диалоги.md) |
 | `Validator.exe` не завершается | [30-07](30_ГРАБЛИ/30-07_validator_и_designer_только_окна.md) |
 | `element 'X' is not allowed for content model` | [30-08](30_ГРАБЛИ/30-08_порядок_элементов_по_схеме.md) |
@@ -81,6 +83,6 @@
 ```
 10-01..10-05 заняты
 20-01..20-03 заняты
-30-01..30-08 заняты
+30-01..30-09 заняты
 40-01, 40-02 заняты
 ```

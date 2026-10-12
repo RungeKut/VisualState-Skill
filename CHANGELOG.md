@@ -33,3 +33,4 @@
   сами; `test_project.py` — любой проект по пути аргументом.
 * **Шаблон** `templates/new_machine`: `model.py` (кнопка с долгим
   нажатием) + `build.py` (модель, проверки, код, сценарий в Validator).
+* 30-09: функция в guard выбора — конфликт Verificator.
