@@ -1,0 +1,38 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# --- вывод тестов и прогонов ---
+tests/vyvod/
+templates/*/vs_model/
+templates/*/vs_gen/
+
+# --- стоп-лист: приметы изделий этой машины, только локально (40-02) ---
+tools/stoplist.txt
+
+# --- файлы Visual State ---
+# Модели и сгенерированный код в набор не кладём: это инструмент, а не архив
+# проектов. Проверки работают на примерах поставки и на моделях, которые
+# строят сами (tests/vyvod). Схемы .xsd — файлы IAR, вырезаются на машине.
+*.vsp
+*.vsr
+*.vnw
+*.vws
+*.vtg
+*.vdi
+*.vre
+*.cre
+*.ipcf
+*.stereotypes
+*.bk1
+*.bk2
+*.bk3
+*.xsd
+
+# --- прочее ---
+*.bak
+*.log
+Thumbs.db
+desktop.ini
