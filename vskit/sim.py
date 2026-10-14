@@ -267,12 +267,15 @@ class ControlCenter:
 
 
 class Simulator:
-    """Validator под управлением скрипта. Работает над копией модели."""
+    """Validator под управлением скрипта. Работает над копией модели.
+    desktop=HiddenDesktop() (HiddenDesktop-Kit) — окна Validator на скрытом
+    столе, у человека их нет."""
 
-    def __init__(self, vsp, answers=None, timeout=30, lookahead=False):
+    def __init__(self, vsp, answers=None, timeout=30, lookahead=False,
+                 desktop=None):
         self.src = os.path.abspath(vsp)
         self.lookahead = lookahead
-        self.cc = ControlCenter(timeout, answers)
+        self.cc = ControlCenter(timeout, answers, desktop)
         p = model.load(self.src)
         self.events = set(p.names("events")) | set(p.names("signals")) | \
             {"SE_RESET"}
