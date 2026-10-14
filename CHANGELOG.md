@@ -5,6 +5,20 @@
 
 ---
 
+## 2026-10-14 — VisualState-Kit 0.3.0 (в работе)
+
+* **Репозиторий по образцу MCU-Kit**: 40-02 дополнена — `git pull --rebase`
+  в начале, push сразу, вклад без права записи pull request'ом из форка,
+  разбор PR владельцем при pull (особое внимание исполняемым файлам),
+  GitHub без gh, снимки диаграмм рабочего проекта в репозиторий не
+  кладутся; раздел о синхронизации в `SKILL.md`, README и правилах базы.
+* **Документация автомата**: `vskit.doc` — `vk.document` строит русский
+  Markdown об узлах и связях из модели и заметок `note=` (в `.vsr` не
+  пишутся); `vk.undocumented` и `strict=True` требуют описать каждую
+  сущность. `Machine.describe`, `describe_region`, параметр `note=` у
+  state/trans/internal/event/action/var/const. Запись 20-06, обязательный
+  раздел в `SKILL.md`, `tests/test_doc.py`.
+
 ## 2026-10-14 — VisualState-Kit 0.2.0
 
 Раскладка диаграмм и снимки Designer без помехи человеку. Проверено на

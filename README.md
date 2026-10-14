@@ -119,6 +119,7 @@ python tests\test_coder.py      HCoder и Coder, ключи, gcc, ошибки, 
 python tests\test_design.py     автомат текстом -> всё; Validator и Designer (--no-gui без окон)
 python tests\test_sim.py        симуляция примеров через Control Center
 python tests\test_layout.py     раскладка диаграмм: пересечения, подписи, листы, страницы, сплайны (без окон)
+python tests\test_doc.py        документация автомата: строгий режим, Markdown, заметки не в модели
 python tests\test_shot.py       снимки Designer на скрытом столе (нужен HiddenDesktop-Kit; окон у человека нет)
 python tests\test_project.py <проект.vsp>   любой проект целиком (только читается)
 python tools\check_docs.py      целостность базы знаний
@@ -143,3 +144,14 @@ AB. Проект с IAR не связан и не одобрен ею: это н
 который управляет легально установленной копией Visual State через её
 штатные программы, документированный API и формат файлов. Файлы IAR
 (схемы XML, примеры) в набор не входят.
+
+## Работа с нескольких машин
+
+В начале — `git pull --rebase`; после каждой правки набора — `git diff`,
+`python tools/check_docs.py --project "<папка проекта>"`, коммит, `git
+push`. Без права записи правка уходит pull request'ом из своего форка;
+владелец разбирает открытые PR при каждом pull (`gh pr list`). Порядок —
+`knowledge/40_СРЕДА/40-02`. **В набор не попадает ничего о рабочих
+проектах** — ни в файлы, ни в текст коммита, ни снимки окон их программ.
+Приметы — в `tools/stoplist.txt`: он локальный (`.gitignore`), его заводит
+`setup.ps1`. Автор коммитов задаётся для клона публичным именем.

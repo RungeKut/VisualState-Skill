@@ -93,13 +93,14 @@ def _split_args(s):
 
 class _El:
     def __init__(self, kind, name, type="", args=(), value=None, expl="",
-                 lo=None, hi=None, guid=None):
+                 lo=None, hi=None, guid=None, note=""):
         self.kind = kind
         self.name = name
         self.type = type
         self.args = list(args)
         self.value = value
         self.expl = expl
+        self.note = note
         self.lo = lo
         self.hi = hi
         self.guid = guid or new_guid()
@@ -115,6 +116,7 @@ class _V:
         self.exit = []
         self.trans = []
         self.expl = ""
+        self.note = ""
         self.w = self.h = 0
         self.x = self.y = 0
 
@@ -124,12 +126,13 @@ class _R:
         self.name = name
         self.guid = guid or new_guid()
         self.vertices = []
+        self.note = ""
         self.w = self.h = 0
 
 
 class _T:
     def __init__(self, kind, source, target, trigger, guards, do, when_in,
-                 not_in, special, expl, guid=None):
+                 not_in, special, expl, guid=None, note=""):
         self.kind = kind
         self.source = source
         self.target = target
@@ -140,6 +143,7 @@ class _T:
         self.not_in = not_in
         self.special = special
         self.expl = expl
+        self.note = note
         self.guid = guid or new_guid()
 
 
@@ -173,41 +177,45 @@ class Machine:
         self.els.append(e)
         return e
 
-    def event(self, name, *args, expl="", guid=None):
+    def event(self, name, *args, expl="", guid=None, note=""):
         """Событие. args — пары (имя, тип): ("lvl", "VS_UINT8")."""
         for a in args:
             _check_type(a[1], "аргумент события %s" % name)
-        return self._add_el("event", name, args=args, expl=expl, guid=guid)
+        return self._add_el("event", name, args=args, expl=expl, guid=guid,
+                            note=note)
 
-    def signal(self, name, *args, expl="", guid=None):
+    def signal(self, name, *args, expl="", guid=None, note=""):
         """Сигнал (внутреннее событие системы)."""
-        return self._add_el("signal", name, args=args, expl=expl, guid=guid)
+        return self._add_el("signal", name, args=args, expl=expl,
+                            guid=guid, note=note)
 
-    def action(self, name, *args, returns="VS_VOID", expl="", guid=None):
+    def action(self, name, *args, returns="VS_VOID", expl="", guid=None,
+               note=""):
         """Функция действия (её пишет человек в C)."""
         _check_type(returns, "действие %s" % name)
         for a in args:
             _check_type(a[1], "аргумент действия %s" % name)
         return self._add_el("action", name, type=returns, args=args,
-                            expl=expl, guid=guid)
+                            expl=expl, guid=guid, note=note)
 
-    def const(self, name, type, value, expl="", guid=None):
+    def const(self, name, type, value, expl="", guid=None, note=""):
         _check_type(type, "константа %s" % name)
         return self._add_el("const", name, type=type, value=value,
-                            expl=expl, guid=guid)
+                            expl=expl, guid=guid, note=note)
 
-    def var(self, name, type, init=0, lo=None, hi=None, expl="", guid=None):
+    def var(self, name, type, init=0, lo=None, hi=None, expl="", guid=None,
+            note=""):
         """Внутренняя переменная модели."""
         _check_type(type, "переменная %s" % name)
         return self._add_el("intvar", name, type=type, value=init, lo=lo,
-                            hi=hi, expl=expl, guid=guid)
+                            hi=hi, expl=expl, guid=guid, note=note)
 
     def extvar(self, name, type, init=0, lo=None, hi=None, expl="",
-               guid=None):
+               guid=None, note=""):
         """Внешняя переменная (живёт в коде пользователя)."""
         _check_type(type, "переменная %s" % name)
         return self._add_el("extvar", name, type=type, value=init, lo=lo,
-                            hi=hi, expl=expl, guid=guid)
+                            hi=hi, expl=expl, guid=guid, note=note)
 
     def _region_of(self, parent_path, region):
         if not parent_path:
@@ -252,14 +260,28 @@ class Machine:
         return v
 
     def state(self, path, entry=None, exit=None, region=None, expl="",
-              guid=None):
+              guid=None, note=""):
         """Состояние. path — 'A' или 'A.B' (B внутри A). entry/exit —
         строка или список: 'Act(1)', 'x = x + 1'."""
         v = self._add_vertex("state", path, region, guid)
         v.entry = _list(entry)
         v.exit = _list(exit)
         v.expl = expl
+        v.note = note
         return path
+
+    def describe(self, path, text):
+        """Заметка о вершине (состояние, выбор): для документа vskit.doc,
+        в модель (.vsr) НЕ пишется. path — путь или значение, которое
+        вернули choice()/history()."""
+        self._vertex(path).note = text
+        return path
+
+    def describe_region(self, parent, region, text):
+        """Заметка о регионе parent (путь состояния; '' — верхний регион),
+        region=None — первый регион. В модель не пишется: описание региона
+        в <expl> показывалось бы на диаграмме."""
+        self._region_of(parent, region).note = text
 
     def _pseudo(self, kind, prefix, parent, region, guid):
         self._n[kind] += 1
@@ -304,7 +326,7 @@ class Machine:
 
     def trans(self, source, target, trigger, guard=None, do=None,
               when_in=None, not_in=None, otherwise=False, triggerless=False,
-              expl="", guid=None):
+              expl="", guid=None, note=""):
         """Внешний переход. trigger — 'evX' или 'evX(a, b)' (имена
         аргументов события); None — без события (из начального,
         исторического, выбора; из состояния — только triggerless=True).
@@ -316,15 +338,15 @@ class Machine:
         special = "else" if otherwise else (
             "triggerless" if triggerless else "")
         t = _T("external", source, target, trigger, _list(guard), _list(do),
-               _list(when_in), _list(not_in), special, expl, guid)
+               _list(when_in), _list(not_in), special, expl, guid, note)
         src.trans.append(t)
         return t
 
     def internal(self, state, trigger, guard=None, do=None, when_in=None,
-                 not_in=None, expl="", guid=None):
+                 not_in=None, expl="", guid=None, note=""):
         """Внутренний переход: реакция без выхода из состояния."""
         t = _T("internal", state, None, trigger, _list(guard), _list(do),
-               _list(when_in), _list(not_in), "", expl, guid)
+               _list(when_in), _list(not_in), "", expl, guid, note)
         self._vertex(state).trans.append(t)
         return t
 
