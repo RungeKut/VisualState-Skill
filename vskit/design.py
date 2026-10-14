@@ -2,9 +2,10 @@
 """Модель Visual State из описания на Python — запись .vsp/.vsr/.vnw.
 
 Пишется формат 11 — тот, что сохраняет Designer 9.1. Ссылки внутри
-.vsr — по GUID, вызовы действий — по имени. Координаты расставляются
-простой сеткой (Designer открывает такую модель; при первой правке
-человек может разложить её по-своему).
+.vsr — по GUID, вызовы действий — по имени. Координаты, маршруты и
+подписи переходов считает vskit.layout (слои, порты, боковые «шины»,
+сплайны для параллельных рёбер у выборов, страницы и отдельные листы для
+крупных регионов: knowledge/20_ПРИЁМЫ/20-04).
 
     import vskit as vk
     m = vk.Machine("Lamp")
@@ -37,7 +38,8 @@ region="Leds"). Ошибки ссылок (нет события, действи
 
 Правка существующей модели — from_project(model.load(vsp)): автоматы
 переносятся в описание с сохранением GUID, дальше — те же методы и
-save() в НОВУЮ папку. Раскладка на диаграмме при этом строится заново.
+save() в НОВУЮ папку. Раскладка на диаграмме при этом строится заново
+(vskit.layout).
 """
 import os
 import re
@@ -54,7 +56,8 @@ _CALL = re.compile(r"^\s*([A-Za-z_]\w*)\s*\((.*)\)\s*;?\s*$", re.S)
 
 STATE_W, STATE_H, LABEL_H = 688, 265, 42
 PSEUDO = 53
-GAP, MARGIN = 106, 53
+MARGIN = 53
+PAGE_W, PAGE_H = 2000, 2850
 
 
 def new_guid():
@@ -383,36 +386,13 @@ class Machine:
             return []
         return ["%s: %r — не вызов действия и не присваивание" % (where, a)]
 
-    def _layout_region(self, r):
-        y = MARGIN
-        w = 0
-        for v in r.vertices:
-            if v.kind == "state":
-                if v.regions:
-                    for sub in v.regions:
-                        self._layout_region(sub)
-                    v.w = max(STATE_W, sum(s.w for s in v.regions) + MARGIN)
-                    v.h = LABEL_H + max(s.h for s in v.regions) + MARGIN
-                else:
-                    v.w, v.h = STATE_W, STATE_H
-            else:
-                v.w = v.h = PSEUDO
-            v.x = MARGIN
-            v.y = y
-            y += v.h + GAP
-            w = max(w, v.w)
-        for v in r.vertices:
-            if v.kind != "state":
-                v.x = MARGIN + (w - v.w) // 2
-        r.w = w + 2 * MARGIN
-        r.h = max(y, 2 * MARGIN + PSEUDO)
-
     def xml(self):
         """Текст .vsr (format 11)."""
         errs = self.check()
         if errs:
             raise ValueError("автомат %s:\n  " % self.name + "\n  ".join(errs))
-        self._layout_region(self.top)
+        from . import layout as _layout
+        _layout.layout(self)
         guids = {p: v.guid for p, v, _r in self._walk()}
         geo = {p: v for p, v, _r in self._walk()}
         names = {e.name: e for e in self.els}
@@ -496,12 +476,19 @@ class Machine:
             a("    </%s>" % folder)
 
     def _region_blocks(self, a, r, top, column=0):
+        off = not top and getattr(r, "off_page", False)
         a('    <region excluded="false" guid="%s" name="%s" offPage="%s">'
-          % (r.guid, r.name, "true" if top else "false"))
+          % (r.guid, r.name, "true" if (top or off) else "false"))
         a("      <expl></expl>")
         a('      <placement column="%d" row="0"/>' % column)
-        a('      <size height="%d" width="%d"/>' % (r.h, r.w))
-        a('      <view colorNumber="7" pagesHorz="2" pagesVert="2"/>')
+        if off:
+            from .layout import PH_W, PH_H
+            a('      <size height="%d" width="%d"/>' % (PH_H, PH_W))
+        else:
+            a('      <size height="%d" width="%d"/>' % (r.h, r.w))
+        a('      <view colorNumber="7" pagesHorz="%d" pagesVert="%d"/>'
+          % (max(2, -(-(r.w + MARGIN) // PAGE_W)),
+             max(2, -(-(r.h + MARGIN) // PAGE_H))))
         a('      <diagramInformation textDisplayNote="preserve" '
           'textDisplayState="preserve" textDisplayTransition="preserve"/>')
         if r.vertices:
@@ -638,20 +625,22 @@ class Machine:
                 a("          <expl>%s</expl>" % escape(t.expl or ""))
                 a("          <alias></alias>")
                 a("          <transitionProperties>")
+                label = getattr(t, "_label", None)
+                if label is None:
+                    label = (v.h + 79, v.w // 2, v.w // 2 + 476, v.h)
                 a('            <position bottom="%d" left="%d" right="%d" '
-                  'top="%d"/>' % (v.h + 79, v.w // 2, v.w // 2 + 476, v.h))
-                a('            <properties value="809894016"/>')
+                  'top="%d"/>' % label)
+                a('            <properties value="%d"/>'
+                  % getattr(t, "_props", 809894016))
                 a("            <routePoints>")
-                if t.target == path:
-                    a('              <routePoint x="%d" y="%d"/>'
-                      % (v.w, v.h // 3))
-                    a('              <routePoint x="%d" y="%d"/>'
-                      % (v.w, 2 * v.h // 3))
-                else:
-                    a('              <routePoint x="%d" y="%d"/>'
-                      % (v.w // 2, v.h))
-                    a('              <routePoint x="%d" y="0"/>'
-                      % (tg.w // 2))
+                route = getattr(t, "_route", None)
+                if route is None:
+                    if t.target == path:
+                        route = [(v.w, v.h // 3), (v.w, 2 * v.h // 3)]
+                    else:
+                        route = [(v.w // 2, v.h), (tg.w // 2, 0)]
+                for x, y in route:
+                    a('              <routePoint x="%d" y="%d"/>' % (x, y))
                 a("            </routePoints>")
                 a("          </transitionProperties>")
                 if t.special:

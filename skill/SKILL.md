@@ -69,6 +69,8 @@ print(vk.version(), vk.license_ok()[0])
 | Всё сразу | `vk.full_check(vsp, out_dir)` — схема, API, Verificator, кодер, gcc | нет |
 | Симуляция по событиям | `with vk.Simulator(vsp) as s: s.deduct("SE_RESET"); s.deduct("evX", 1)` | Validator на секунды |
 | Откроет ли Designer | `vk.designer_check(vsp, save=True)` | Designer на ~8 с |
+| Посмотреть диаграмму, не мешая человеку | `vk.designer_shot(vsp, "all.png", zoom=50)`; лист региона — `open_path=[0,0,0,0,0,k]`; нужен набор HiddenDesktop-Kit (скилл `hidden-desktop`) | Designer на СКРЫТОМ столе: окон нет |
+| Раскладка диаграммы | считает `vskit.layout` при `save()`: правила — `knowledge/20_ПРИЁМЫ/20-04`; страницы и листы — `10-06` | нет |
 | Второе мнение о модели | `vk.smapi.inventory(vsp)`, `vk.schema_check(vsp)` | нет |
 | Новый проект автомата | скопировать `templates/new_machine`, править `model.py`, `python build.py --sim` | — |
 
@@ -110,6 +112,19 @@ with vk.Simulator(vsp) as s:
 7. **Никогда не выдавать непроверенное за проверенное** — ни в коде, ни в
    отчёте, ни в базе знаний.
 
+## Диаграммы: раскладка, листы, снимки
+
+* Координаты, маршруты, подписи, страницы и листы (offPage) считает
+  `vskit.layout` — **править правила там**, а не руками в Designer. Правила
+  и соглашения координат Designer — `knowledge/20_ПРИЁМЫ/20-04` и
+  `knowledge/10_API/10-06`.
+* **Смотреть диаграмму — только на скрытом столе** (`vk.designer_shot`):
+  обычный `launchDesigner` выводит окно на экран человека и перехватывает
+  его фокус. Скилл `hidden-desktop` (HiddenDesktop-Kit) объясняет, как
+  это устроено и как смотреть снимки (вырезка фрагментов ≤ 2000 px).
+* Масштаб Designer не работает, если диаграмма больше сетки страниц
+  (`pagesHorz/pagesVert`): `knowledge/30_ГРАБЛИ/30-10`.
+
 ## Куда смотреть дальше
 
 | Нужно | Читать |
@@ -139,6 +154,8 @@ with vk.Simulator(vsp) as s:
 | `smapi` | `inventory`, `normalize` — StateMachineAPI64.dll |
 | `schema` | `schemas`, `validate`, `validate_project` — схема из HCoder.exe |
 | `report` | `full_check`, `Report` |
+| `layout` | раскладка диаграмм: слои, порты, шины, подписи, листы |
+| `shot` | `designer_shot` — снимок Designer на скрытом столе (HiddenDesktop-Kit) |
 
 ## Обновление набора по ходу работы
 

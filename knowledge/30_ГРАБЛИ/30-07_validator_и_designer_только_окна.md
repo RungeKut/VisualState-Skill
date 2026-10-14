@@ -24,7 +24,9 @@ HCoder, Documenter и Verificator (`Verificator.exe` без аргументов
 * Симуляция и открытие в Designer — через `ControlCenter.exe`
   ([10-04](../10_API/10-04_control_center_validator_designer.md)):
   `vk.Simulator`, `vk.designer_check`. Окна при этом видны на экране
-  несколько секунд.
+  несколько секунд — на столе человека, если не передать
+  `ControlCenter(desktop=HiddenDesktop())` (HiddenDesktop-Kit): тогда окон
+  у человека нет ([20-05](../20_ПРИЁМЫ/20-05_снимок_designer_на_скрытом_столе.md)).
 * Любой запуск программ с окнами — с тайм-аутом и проверкой окон
   (`vk.windows()`: класс `#32770` — диалог).
 

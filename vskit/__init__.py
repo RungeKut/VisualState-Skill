@@ -32,7 +32,7 @@ knowledge/INDEX.md).
         s.deduct("SE_RESET"); print(s.deduct("evToggle"))
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from .env import (bin_dir, examples_dir, gcc_bin, gcc_tool, gcc_version,
                   is_safe_path, job_dir, kit_root, license_ok, tool,
@@ -47,6 +47,7 @@ from .build import CompileError, CompileResult, compile_check
 from . import schema, smapi
 from .schema import validate_project as schema_check
 from .report import Report, full_check
+from .shot import ShotError, designer_shot
 
 __all__ = [
     "utf8_console", "vs_root", "bin_dir", "tool", "examples_dir", "version",
@@ -59,4 +60,5 @@ __all__ = [
     "Simulator", "ControlCenter", "designer_check", "windows", "SimError",
     "compile_check", "CompileResult", "CompileError",
     "smapi", "schema", "schema_check", "Report", "full_check",
+    "designer_shot", "ShotError",
 ]

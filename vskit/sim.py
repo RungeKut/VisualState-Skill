@@ -22,9 +22,11 @@ deductEvent на каждое событие. Ответ — список выз
 Validator шлёт встречный запрос getActionFunctionCallResult; ответ
 берётся из answers ({имя действия: значение или функция(*args)}), иначе 0.
 
-Validator и Designer открывают свои окна (они видны на экране) и
-закрываются в конце через quitValidator/quitDesigner без вопроса о
-сохранении.
+Validator и Designer открывают свои окна и закрываются в конце через
+quitValidator/quitDesigner без вопроса о сохранении. Окна видны на экране
+человека, если не передать ControlCenter(desktop=HiddenDesktop()) из набора
+HiddenDesktop-Kit: тогда Control Center, а за ним Designer/Validator живут
+на скрытом рабочем столе (vskit.shot, knowledge/20_ПРИЁМЫ/20-05).
 
 Проверенные правила (knowledge/10_API/10-04, 30_ГРАБЛИ/30-06):
   * каждое сообщение кончается переводом строки — без него Control
@@ -158,9 +160,10 @@ def ensure_vws(vsp):
 class ControlCenter:
     """Соединение с ControlCenter.exe, запущенным на время работы."""
 
-    def __init__(self, timeout=30, answers=None):
+    def __init__(self, timeout=30, answers=None, desktop=None):
         self.timeout = timeout
         self.answers = dict(answers or {})
+        self.desktop = desktop
         self.trace = []
         self._proc = None
         self._sock = None
@@ -169,9 +172,12 @@ class ControlCenter:
 
     def start(self):
         self.port = _free_port()
-        self._proc = subprocess.Popen(
-            [env.tool("ControlCenter"), "-port%d" % self.port],
-            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        cmd = [env.tool("ControlCenter"), "-port%d" % self.port]
+        if self.desktop is not None:
+            self._proc = self.desktop.launch(cmd)
+        else:
+            self._proc = subprocess.Popen(
+                cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         t = time.time()
         while True:
             try:
@@ -179,7 +185,9 @@ class ControlCenter:
                                                        self.port), timeout=2)
                 break
             except OSError:
-                if time.time() - t > 20 or self._proc.poll() is not None:
+                gone = (not self._proc.running if self.desktop is not None
+                        else self._proc.poll() is not None)
+                if time.time() - t > 20 or gone:
                     self.stop()
                     raise SimError("Control Center не принял соединение")
                 time.sleep(0.3)
@@ -245,10 +253,16 @@ class ControlCenter:
         finally:
             self._sock = None
             if self._proc is not None:
-                try:
-                    self._proc.wait(5)
-                except subprocess.TimeoutExpired:
-                    self._proc.kill()
+                if self.desktop is not None:
+                    t0 = time.time()
+                    while self._proc.running and time.time() - t0 < 5:
+                        time.sleep(0.1)
+                    self._proc.terminate()
+                else:
+                    try:
+                        self._proc.wait(5)
+                    except subprocess.TimeoutExpired:
+                        self._proc.kill()
                 self._proc = None
 
 

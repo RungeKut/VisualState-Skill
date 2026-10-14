@@ -125,5 +125,14 @@ if ($LASTEXITCODE -ne 0) {
 }
 $ErrorActionPreference = $prev
 
+$hd = $env:HDKIT_HOME
+if (-not $hd) { $hd = [Environment]::GetEnvironmentVariable("HDKIT_HOME", "User") }
+if ($hd -and (Test-Path (Join-Path $hd "hdkit"))) {
+    Write-Host "OK   HiddenDesktop-Kit: $hd (снимки Designer на скрытом столе)"
+} else {
+    Write-Host "НЕТ  HiddenDesktop-Kit не найден: vk.designer_shot не заработает."
+    Write-Host "     Установить: tools\setup.ps1 набора HiddenDesktop-Kit (переменная HDKIT_HOME)"
+}
+
 Write-Host ""
 Write-Host "Готово. Перезапустите Claude Code и Kimi Code, чтобы они увидели скилл (/visualstate и /skill:visualstate)."

@@ -4,12 +4,14 @@
 библиотека на Python, база проверенного знания и правила её ведения.
 Подключается к Claude Code как скилл `/visualstate` и к Kimi Code как
 `/skill:visualstate`. Устроен так же, как соседние наборы Allegro-Kit и
-MCU-Kit; компилятор для проверки кода берёт из MCU-Kit.
+MCU-Kit; компилятор для проверки кода берёт из MCU-Kit, а снимки
+диаграмм Designer делает на скрытом рабочем столе через HiddenDesktop-Kit
+(скилл `hidden-desktop`).
 
 ```
 VisualState-Kit/
 ├── skill/SKILL.md         точка входа для ИИ (подключён как скилл)
-├── vskit/                 библиотека Python
+├── vskit/                 библиотека Python (layout — раскладка диаграмм, shot — снимки Designer)
 ├── knowledge/             база знаний
 │   ├── 00_ПРАВИЛА.md      правила ведения базы
 │   ├── INDEX.md           карта базы и поиск по симптому
@@ -84,7 +86,7 @@ with vk.Simulator(p.file) as s:
 
 * **Модель** — XML. `vskit.model` разбирает все форматы, которые читает
   9.1; `vskit.design` пишет format 11 (как Designer 9.1): ссылки по GUID,
-  порядок элементов по схеме, грубая раскладка сеткой.
+  порядок элементов по схеме, раскладка диаграмм (`vskit.layout`).
 * **Кодеры и Verificator** — консольные программы; запускаются над копией
   модели в рабочей папке, результат копируется наружу. Их коды возврата
   об успехе не говорят — решает текст вывода и файлы.
@@ -116,6 +118,8 @@ python tests\test_model.py      разбор всех примеров прот�
 python tests\test_coder.py      HCoder и Coder, ключи, gcc, ошибки, Verificator
 python tests\test_design.py     автомат текстом -> всё; Validator и Designer (--no-gui без окон)
 python tests\test_sim.py        симуляция примеров через Control Center
+python tests\test_layout.py     раскладка диаграмм: пересечения, подписи, листы, страницы, сплайны (без окон)
+python tests\test_shot.py       снимки Designer на скрытом столе (нужен HiddenDesktop-Kit; окон у человека нет)
 python tests\test_project.py <проект.vsp>   любой проект целиком (только читается)
 python tools\check_docs.py      целостность базы знаний
 ```
