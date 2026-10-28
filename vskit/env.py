@@ -7,8 +7,8 @@
                   Visual State * (самая свежая)
     рабочая папка VSKIT_WORK -> %LOCALAPPDATA%\\Temp\\vskit ->
                   %SystemDrive%\\vskit_work (первая без пробелов и кириллицы)
-    GCC           VSKIT_GCC (папка bin) -> mcukit.gcc_bin() из MCU-Kit
-                  (MCUKIT_HOME, затем E:\\Skills\\MCU-Kit) ->
+    GCC           VSKIT_GCC (папка bin) -> mcukit.gcc_bin() из соседнего
+                  скилла mcu (<родитель корня набора>\\mcu) ->
                   arm-none-eabi-gcc в PATH
 
 Coder и HCoder переносят кириллицу и пробелы в пути (проверено), но набор
@@ -38,7 +38,7 @@ def utf8_console():
 
 
 def kit_root():
-    """Корень набора (папка, где лежат vskit/, knowledge/, skill/)."""
+    """Корень набора (папка SKILL.md, vskit/, knowledge/)."""
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -173,14 +173,19 @@ def job_dir(kind="job", keep=20):
     return path
 
 
+def mcu_root():
+    """Папка соседнего скилла mcu: <родитель корня набора>/mcu."""
+    return os.path.join(os.path.dirname(kit_root()), "mcu")
+
+
 def _mcukit():
-    for root in (os.environ.get("MCUKIT_HOME"), r"E:\Skills\MCU-Kit"):
-        if root and os.path.exists(os.path.join(root, "mcukit", "env.py")):
-            if root not in sys.path:
-                sys.path.insert(0, root)
-            import mcukit
-            return mcukit
-    return None
+    root = mcu_root()
+    if not os.path.exists(os.path.join(root, "mcukit", "env.py")):
+        return None
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    import mcukit
+    return mcukit
 
 
 def gcc_bin():
@@ -198,7 +203,8 @@ def gcc_bin():
     if w:
         return os.path.dirname(w) + os.sep
     raise RuntimeError("arm-none-eabi-gcc не найден: задайте VSKIT_GCC "
-                       "(папку bin) или поставьте MCU-Kit (MCUKIT_HOME).")
+                       "(папку bin) или склонируйте MCU-Skill в папку mcu "
+                       "рядом с этим набором (40-01).")
 
 
 def gcc_tool(name):

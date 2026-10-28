@@ -24,8 +24,8 @@ Validator шлёт встречный запрос getActionFunctionCallResult; 
 
 Validator и Designer открывают свои окна и закрываются в конце через
 quitValidator/quitDesigner без вопроса о сохранении. Окна видны на экране
-человека, если не передать ControlCenter(desktop=HiddenDesktop()) из набора
-HiddenDesktop-Kit: тогда Control Center, а за ним Designer/Validator живут
+человека, если не передать ControlCenter(desktop=HiddenDesktop()) из
+соседнего скилла hidden-desktop: тогда Control Center, а за ним Designer/Validator живут
 на скрытом рабочем столе (vskit.shot, knowledge/20_ПРИЁМЫ/20-05).
 
 Проверенные правила (knowledge/10_API/10-04, 30_ГРАБЛИ/30-06):
@@ -268,7 +268,7 @@ class ControlCenter:
 
 class Simulator:
     """Validator под управлением скрипта. Работает над копией модели.
-    desktop=HiddenDesktop() (HiddenDesktop-Kit) — окна Validator на скрытом
+    desktop=HiddenDesktop() (скилл hidden-desktop) — окна Validator на скрытом
     столе, у человека их нет."""
 
     def __init__(self, vsp, answers=None, timeout=30, lookahead=False,

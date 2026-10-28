@@ -20,7 +20,9 @@ model.py (описание)  ->  vs_model\*.vsp/.vsr  ->  full_check  ->  vs_gen
 
 Шаблон — `templates/new_machine`: правится только `model.py`,
 `build.py` пересоздаёт модель и код, `--sim` прогоняет сценарий в
-Validator, `--designer` открывает модель в Designer.
+Validator, `--designer` открывает модель в Designer. Скопировав шаблон в
+проект, вписать в `KIT` в начале `build.py` корень набора (папку
+`SKILL.md`): переменных окружения шаблон не читает (40-01).
 
 ## Описание
 

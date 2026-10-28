@@ -79,7 +79,7 @@ vskit.design, Designer открыл и сохранил её, после сох�
 совпал. Окна закрываются: `vk.windows()` пуст после выхода.
 
 ## Скрытый рабочий стол
-`ControlCenter(desktop=HiddenDesktop())` (набор HiddenDesktop-Kit) запускает
+`ControlCenter(desktop=HiddenDesktop())` (скилл hidden-desktop) запускает
 ControlCenter.exe на скрытом столе; Designer и Validator наследуют стол,
 окон у человека нет; то же для симуляции: `Simulator(vsp, desktop=...)`.
 Подробно — [20-05](../20_ПРИЁМЫ/20-05_снимок_designer_на_скрытом_столе.md).

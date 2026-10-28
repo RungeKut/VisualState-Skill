@@ -12,9 +12,10 @@ http://www.iar.com/visualSTATE/2011/Modelfile.
     errs = validate(r"C:\\модель\\Lamp.vsr")    # [] — файл по схеме
     print(validate_project(r"C:\\модель\\Project.vsp"))
 
-Нужен lxml (ставит tools/setup.ps1). Тот же разбор схемой делают Coder
-и HCoder при загрузке: их ошибка «element 'X' is not allowed for content
-model '(...)'» — нарушение порядка или состава элементов.
+Нужен lxml: `python -m pip install --user lxml` (knowledge/40_СРЕДА/40-01).
+Тот же разбор схемой делают Coder и HCoder при загрузке: их ошибка
+«element 'X' is not allowed for content model '(...)'» — нарушение порядка
+или состава элементов.
 """
 import os
 import re

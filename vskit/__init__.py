@@ -32,7 +32,7 @@ knowledge/INDEX.md).
         s.deduct("SE_RESET"); print(s.deduct("evToggle"))
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 from .env import (bin_dir, examples_dir, gcc_bin, gcc_tool, gcc_version,
                   is_safe_path, job_dir, kit_root, license_ok, tool,

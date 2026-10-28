@@ -9,25 +9,25 @@
     vs_model/   .vsp, .vsr, .vnw, .vws — открываются в Designer
     vs_gen/     сгенерированный C-код для прошивки
 Обе папки пересоздаются при каждом запуске: правка — только в model.py.
+
+Скопировав шаблон в проект, впишите в KIT корень набора VisualState-Skill
+(папку его SKILL.md); шаблон на своём месте в наборе находит корень сам.
 """
 import os
 import shutil
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+KIT = r""
 
 
 def kit_root():
-    """Корень VisualState-Kit: VSKIT_HOME, иначе junction скилла."""
-    cands = [os.environ.get("VSKIT_HOME", "")]
-    for agent in (r".claude\skills\visualstate", r".kimi-code\skills\visualstate"):
-        link = os.path.join(os.path.expanduser("~"), agent)
-        if os.path.isdir(link):
-            cands.append(os.path.dirname(os.path.realpath(link)))
-    for c in cands:
+    """Корень набора: KIT, иначе <корень>/templates/new_machine -> <корень>."""
+    for c in (KIT, os.path.dirname(os.path.dirname(HERE))):
         if c and os.path.isdir(os.path.join(c, "vskit")):
             return c
-    sys.exit("не найден VisualState-Kit: задайте VSKIT_HOME")
+    sys.exit("не найден набор VisualState-Skill: впишите его корень (папку "
+             "SKILL.md) в KIT в начале build.py")
 
 
 sys.path.insert(0, kit_root())

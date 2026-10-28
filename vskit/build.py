@@ -17,7 +17,8 @@
     не сгенерирован файл проекта) — r.ok == False.
 
 Функции действий берутся из `extern ... Имя (...);` в сгенерированных
-заголовках. Компилятор — env.gcc_bin(): VSKIT_GCC, MCU-Kit, PATH.
+заголовках. Компилятор — env.gcc_bin(): VSKIT_GCC, соседний скилл mcu,
+PATH.
 """
 import glob
 import os

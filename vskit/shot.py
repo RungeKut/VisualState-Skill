@@ -7,7 +7,7 @@
                      open_path=[0, 0, 0, 0, 0, 3])
 
 Control Center, а за ним Designer запускаются на скрытом рабочем столе
-Windows (набор HiddenDesktop-Kit, библиотека hdkit): окон у человека нет,
+Windows (соседний скилл hidden-desktop, библиотека hdkit): окон у человека нет,
 фокус и мышь его. Окно растягивается до предела, масштаб выбирается в
 выпадающем списке Designer (WM_COMMAND), лист региона (offPage) открывается
 двойным кликом по узлу дерева проекта (PostMessage), снимок — PrintWindow.
@@ -18,7 +18,7 @@ open_path — путь по дереву проекта: [0] — проект, �
 [0, 0, 0, 0, 0, k] — лист k-го региона верхнего состояния.
 
 Проверено: knowledge/20_ПРИЁМЫ/20-05, 30_ГРАБЛИ/30-10. Правила работы со
-скрытым столом, ловушки и приёмы — база HiddenDesktop-Kit.
+скрытым столом, ловушки и приёмы — база HiddenDesktop-Skill.
 """
 import os
 import sys
@@ -36,21 +36,23 @@ class ShotError(RuntimeError):
     pass
 
 
+def hd_root():
+    """Папка соседнего скилла hidden-desktop: <родитель корня набора>/
+    hidden-desktop."""
+    return os.path.join(os.path.dirname(env.kit_root()), "hidden-desktop")
+
+
 def _hdkit():
-    cands = [os.environ.get("HDKIT_HOME", "")]
-    for agent in (".claude", ".kimi-code"):
-        link = os.path.join(os.path.expanduser("~"), agent, "skills",
-                            "hidden-desktop")
-        if os.path.isdir(link):
-            cands.append(os.path.dirname(os.path.realpath(link)))
-    for c in cands:
-        if c and os.path.isdir(os.path.join(c, "hdkit")):
-            if c not in sys.path:
-                sys.path.insert(0, c)
-            import hdkit
-            return hdkit
-    raise ShotError("набор HiddenDesktop-Kit не найден: задайте HDKIT_HOME "
-                    "(tools/setup.ps1 набора)")
+    root = hd_root()
+    if not os.path.isdir(os.path.join(root, "hdkit")):
+        raise ShotError("нет соседнего скилла hidden-desktop (%s): git clone "
+                        "https://github.com/RungeKut/HiddenDesktop-Skill.git "
+                        "в папку hidden-desktop рядом с этим набором (40-01)"
+                        % root)
+    if root not in sys.path:
+        sys.path.insert(0, root)
+    import hdkit
+    return hdkit
 
 
 def _tree(main):
