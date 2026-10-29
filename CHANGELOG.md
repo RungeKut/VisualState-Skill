@@ -10,7 +10,7 @@
 * Репозиторий переименован: VisualState-Kit → VisualState-Skill
   (`https://github.com/RungeKut/VisualState-Skill.git`), ветка
   `master` → `main`. Старое имя осталось только в записях ниже.
-* `skill/SKILL.md` → `SKILL.md` в корне, сокращён до ≤ 4096 байт: таблица
+* `skill/SKILL.md` → `SKILL.md` в корне, сокращён до ≤ 2400 знаков (≈ 1024 токена): таблица
   вызовов, минимальный цикл, модули и порядок поиска — новая запись 10-07;
   версия и порядок пользования базой — `00_ПРАВИЛА.md`. Убраны
   `tools/setup.ps1`, `Install-skill.bat`, junction и `VSKIT_HOME`:
